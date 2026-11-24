@@ -20,14 +20,14 @@ button{font:inherit;color:var(--iv);background:linear-gradient(#2d2616,#14110a);
 button:active{transform:scale(.97)}
 button:focus-visible{outline:2px solid #fff;outline-offset:2px}
 button.pri{background:linear-gradient(#f6e27a,#b8902a);color:#120e04;font-weight:700}
-#bw{width:min(94vw,60vh,520px);aspect-ratio:1;position:relative;display:grid;grid-template:repeat(8,1fr)/repeat(8,1fr);border:6px solid #4a2f14;border-radius:6px;box-shadow:0 14px 40px #000,0 0 34px #d4af3744;touch-action:none;direction:ltr;user-select:none;container-type:inline-size}
+#bw{width:min(98vw,calc(var(--z,1)*min(94vw,60vh,520px)));aspect-ratio:1;position:relative;display:grid;grid-template:repeat(8,1fr)/repeat(8,1fr);border:6px solid #4a2f14;border-radius:6px;box-shadow:0 14px 40px #000,0 0 34px #d4af3744;touch-action:none;direction:ltr;user-select:none;container-type:inline-size}
 .sq.l{background:var(--l)}.sq.d{background:var(--d)}.sq{position:relative}
 .sq.last{box-shadow:inset 0 0 0 100px #f6e27a55}.sq.sel{box-shadow:inset 0 0 20px 7px #ffe36b}.sq.chk{box-shadow:inset 0 0 22px 9px #e22}
 .sq.mv::after{content:"";position:absolute;inset:36%;border-radius:50%;background:#12804499}.sq.mv.cp::after{inset:5%;background:none;border:4px solid #128044cc}
 .pc{position:absolute;width:12.5%;height:12.5%;display:flex;align-items:center;justify-content:center;font-size:10.4cqw;line-height:1;pointer-events:none;z-index:2;transition:left .3s cubic-bezier(.3,.8,.25,1),top .3s cubic-bezier(.3,.8,.25,1),opacity .3s,transform .3s}
 .pc.w{color:#fffaf0;text-shadow:0 0 2px #000,0 0 3px #000,0 3px 3px #0009}
 .pc.b{color:#14100a;text-shadow:0 0 2px #f3e3bd,0 1px 2px #fff8,0 3px 3px #0007}
-.bar{display:flex;align-items:center;gap:10px;width:min(94vw,60vh,520px);padding:6px 10px;border:1px solid #d4af3744;border-radius:12px;background:#15120a;direction:ltr}
+.bar{display:flex;align-items:center;gap:10px;width:min(98vw,calc(var(--z,1)*min(94vw,60vh,520px)));padding:6px 10px;border:1px solid #d4af3744;border-radius:12px;background:#15120a;direction:ltr}
 .bar.turn{border-color:var(--g);box-shadow:0 0 14px #d4af3777}
 .bar b{display:block;font-size:14px}.bar small{opacity:.7;font-size:11px}.bar i{margin-inline-start:auto;font-style:normal;color:var(--g)}
 .ico{width:42px;height:42px;border-radius:50%;border:2px solid var(--g);display:flex;align-items:center;justify-content:center;font-size:22px}
@@ -61,11 +61,12 @@ label{display:grid;gap:4px;width:100%;max-width:360px}
 <div id="bw"></div>
 <div class="bar" id="bot"><img class="av s" alt=""><div><b id="bn"></b><small id="bc"></small></div><i id="t2"></i></div>
 <div class="sub" id="ml"></div>
-<div class="row"><button onclick="resign()">🏳 استسلام</button><button onclick="drawB()">🤝 تعادل</button><button onclick="show('h')">🏠 الرئيسية</button></div></div>
+<div class="row"><button onclick="resign()">🏳 استسلام</button><button onclick="drawB()">🤝 تعادل</button><button onclick="zoom(-.1)">🔍−</button><button onclick="zoom(.1)">🔍+</button><button onclick="show('h')">🏠 الرئيسية</button></div></div>
 
 <div class="scr" id="s"><h1>الإعدادات</h1>
 <label>مستوى المؤثرات<input type="range" min="0" max="100" value="70" oninput="sv=this.value/100"></label>
 <label>مستوى الموسيقى<input type="range" min="0" max="100" value="25" oninput="mvol=this.value/100"></label>
+<label>حجم الرقعة<input id="zr" type="range" min="70" max="150" value="100" oninput="zoom(this.value/100,1)"></label>
 <label><span><input type="checkbox" onchange="mute=this.checked"> الوضع الصامت</span></label>
 <button onclick="show('h')">رجوع</button></div>
 
@@ -187,6 +188,9 @@ const resign=()=>{if(over)return;finish('resign',mode=='cpu'?(human=='w'?'b':'w'
 function drawB(){if(over)return;if(mode=='cpu'&&ev({...S,t:human=='w'?'b':'w'})>40)return modal('<h2>رفض الكمبيوتر التعادل</h2><button onclick="closeM()">حسناً</button>');finish('draw',null)}
 /* ===== الإدخال: نقر وسحب وإفلات ===== */
 const at=e=>{const r=bd.getBoundingClientRect(),c=Math.floor((e.clientX-r.left)/r.width*8),w=Math.floor((e.clientY-r.top)/r.height*8);return c<0||c>7||w<0||w>7?-1:w*8+c};
+let zm=1;try{zm=+localStorage.getItem('arz')||1}catch(e){}
+function zoom(d,abs){zm=Math.min(1.5,Math.max(.7,abs?d:zm+d));document.documentElement.style.setProperty('--z',zm);try{localStorage.setItem('arz',zm)}catch(e){}const r=$('#zr');if(r)r.value=Math.round(zm*100)}
+zoom(zm,1);
 let drag=null;
 bd.onpointerdown=e=>{if(busy||over)return;const i=at(e);if(i<0)return;
 if(sel!=null){const m=pick(sel,i);if(m){mv(m);return}}
